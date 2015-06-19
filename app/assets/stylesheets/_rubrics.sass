@@ -56,7 +56,6 @@ h4.notice
 
 #rubric-column-heading
   .metric-heading, .tier-heading
-    background: #eee
     font-size: 19px
     font-style: italic
     color: #333
@@ -75,7 +74,6 @@ h4.notice
 
 #metric-box
   .metric, .tier
-    border: 1px solid #ccc
     padding: 35px 18px 20px
     margin-right: 12px
     height: 225px
@@ -98,7 +96,6 @@ h4.notice
 #rubric-results-table, #rubric-results-table .tier, #rubric-results-table .metric, #rubric-results-table .comments
   border: 1px solid #999
   border-collapse: collapse
-  background-color: #eee
 
 table#rubric-results-table tbody tr
   vertical-align: top
@@ -112,18 +109,13 @@ table#rubric-results-table
 
 #rubric-results-table
   .metric.heading, .tier.heading, .comments
-    background: #CCC
     color: #000
     font-size: .9rem
     label
       color: #000
 
   .metric
-    color: #FFF
     background: $primary-color-5
-
-  .tier.heading:hover
-    background: #CCC
 
   td.tier
     min-width: 150px
@@ -167,7 +159,6 @@ table#rubric-results-table
     font-size: 13px
 
 .metric
-  background: #eee
 
   &.saved
     background: $primary-color-5
@@ -221,7 +212,6 @@ button.delete
     background: $dark_red
 
 .tier
-  background: #eee
 
   &.nocredit
     width: 180px
@@ -414,7 +404,6 @@ button.delete
     background: darken($primary-color-2, 15%)
 
 #rubric-results-table
-  .tier
   .graded-students, .earned_tier
     padding: 6px
     color: white
@@ -430,3 +419,43 @@ button.delete
   .earned_tier
     height: auto
     background: $primary-color-3
+
+table#grade-rubric-table
+
+  tbody
+    tr
+
+      td
+        width: 8rem
+        vertical-align: top
+        padding: 0
+
+      .metric-box
+        margin: 1rem .5rem
+        padding: .5rem
+
+      .tier-heading
+        width: 100%
+        background-color: $primary-color-2
+        padding: .5rem
+        color: #FFF
+
+      .tier-description
+        padding: .5rem
+        font-size: .8rem
+
+      td:last-child .tier-heading
+        background-color: $secondary-color
+
+      td:nth-child(2) .tier-heading
+        background-color: $alert-color
+
+      .tier-box
+        margin: .5rem 0
+        padding: .5rem
+        border-left: 1px solid #DDD
+
+        .badge-row:hover
+          background: none
+          cursor: normal
+

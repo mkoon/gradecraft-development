@@ -1,25 +1,27 @@
-%table.full-width#grade-rubric-table
+%table.responsive#grade-rubric-table
   %thead
     %tr
-      %td
-        .bold Criteria
-      %td(colspan="#{@assignment.rubric.try(:max_tier_count)}")
-        .bold Levels
+      %th Criteria
+      %th(colspan="#{@assignment.rubric.try(:max_tier_count)}")
+        Levels
 
   %tbody
     - @metrics.each do |metric|
       %tr
-        %td.metric
-          .metric-heading
-            .metric-name.bold= metric.wrapped_name(28).html_safe
-            .metric-points.italic= "#{points metric.max_points} Points"
-          .metric-description= metric.wrapped_description(40).html_safe
+        %td
+          .metric-box
+            .metric-heading
+              .metric-name.uppercase.bold= metric.wrapped_name(28).html_safe
+              .metric-points.italic= "#{points metric.max_points} Points"
+            .metric-description= truncate(metric.description, :omission => " ... (continued)", :length => 200)
+
         - metric.tiers.sorted.each do |tier|
-          %td.tier
-            .tier-heading
-              .tier-name.uppercase= tier.wrapped_name(25).html_safe
-              .tier-points.italic= "#{points tier.points} Points"
-            .tier-description= tier.description
+          %td
+            .tier-box
+              .tier-heading
+                .tier-name.uppercase= tier.wrapped_name(25).html_safe
+                .tier-points.italic= "#{points tier.points} Points"
+              .tier-description= truncate(tier.description, :omission => " ... (continued)", :length => 200)
 
             .row.badge-row
               - tier.tier_badges.each_with_index do |badge, index|
