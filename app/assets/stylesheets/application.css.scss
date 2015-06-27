@@ -12,7 +12,7 @@
 
 $primary-color: #002d62;
 $primary-color-2: #269ECC;
-$primary-color-3: #55a9bc;
+$primary-color-3: #1460AE;
 $primary-color-4: #72cdf4;
 $primary-color-5: #0079c0;
 $secondary-color: #00BD39;
@@ -74,7 +74,7 @@ $bg-color-hill-ex-dark: #274F2E;
 @import 'student_dashboard';
 @import 'timeline';
 @import 'analytics';
-/*@import 'background';*/
+@import 'background';
 @import 'breadcrumbs';
 @import 'navigation';
 @import 'videos';

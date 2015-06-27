@@ -15,8 +15,8 @@
           %span.points-assigned(ng-class="{'points-missing': pointsMissing(), 'points-satisfied': pointsSatisfied(), 'points-overage': pointsOverage()}") {{pointsAssigned() | number:0}}
           \/#{number_with_delimiter(@assignment.point_total)} Points Allocated
         %h4.notice(ng-show="pointsMissing()") You have {{pointsRemaining()}} point{{pointsRemaining() > 1 ? "s" : ""}} left to assign
-        %h4.notice(ng-show="pointsSatisfied()") You have allocated all possible points
-        %h4.notice(ng-show="pointsOverage()") You have allocated more points than the assignment total
+        %h4.notice.satisfied(ng-show="pointsSatisfied()") You have allocated all possible points
+        %h4.notice.error(ng-show="pointsOverage()") You have allocated more points than the assignment total
 
       .clear
 
