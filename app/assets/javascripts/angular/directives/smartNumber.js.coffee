@@ -4,7 +4,7 @@ NumberModule.directive 'smartNumber',
 ['smartNumberConfig', (smartNumberConfig) ->
 
     defaultOptions = smartNumberConfig.defaultOptions
-    controlKeys = [0,8,13] # 0 = tab, 8 = backspace , 13 = enter
+    controlKeys = [0,8,13, 46] # 0 = tab, 8 = backspace , 13 = enter, 46 = delete
     keyCodes = { 48:0, 49:1, 50:2, 51:3, 52:4, 53:5, 54:6, 55:7, 56:8, 57:9 }
 
     getOptions = (scope, attrs) ->
@@ -100,9 +100,15 @@ NumberModule.directive 'smartNumber',
     backspacePressed = (elem, event) ->
       originalValue = elem.val() # the original value of the field before keypress
       position = elem[0].selectionStart # cursor position
-      characterBeforeCursor = originalValue.slice(position - 1, position)
-      alert(characterBeforeCursor)
+      newValue = [originalValue.slice(0, position - 1), originalValue.slice(position)].join('') # insert the new number into the field
+      elem.val(newValue) # replace the original value with the new one
 
+    # handle backspace keypresses
+    deletePressed = (elem, event) ->
+      originalValue = elem.val() # the original value of the field before keypress
+      position = elem[0].selectionStart # cursor position
+      newValue = [originalValue.slice(0, position), originalValue.slice(position + 1)].join('') # insert the new number into the field
+      elem.val(newValue) # replace the original value with the new one
 
     makeIsValid = (options) ->
         validations = []
@@ -206,6 +212,30 @@ NumberModule.directive 'smartNumber',
                 # elem.val val.replace /,/g, '' # ATTN: LINE THAT ADDS ON-CLICK COMMA REMOVAL
                 elem[0].select()
 
+            elem.on 'keydown', (event)->
+              keycode = event.which
+
+              return if invalidInput(elem, event, options) 
+
+              if keycode == 8 # backspace is pressed
+                event.preventDefault()
+                event.stopPropagation()
+                backspacePressed(elem, event) # handle logic for backspace
+              else if keycode == 46 # backspace is pressed
+                event.preventDefault()
+                event.stopPropagation()
+                deletePressed(elem, event) # handle logic for backspace
+
+              if elem.val().length == 4 || elem.val().length == 8 # a new comma is added
+                newCursorPosition = elem[0].selectionStart + 1
+              else if elem[0].selectionStart < elem.val().length # cursor is adding numbers, but is not at the end of the input field
+                newCursorPosition = elem[0].selectionStart
+              else # cursor is adding numbers at the end of the input field
+                newCursorPosition = elem[0].selectionStart + 1
+
+              elem.val resetCommas(elem.val()) # reformat the number in place
+              elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+
             if options.preventInvalidInput == true
               elem.on 'keypress', (event) ->
                 event.preventDefault()
@@ -213,12 +243,11 @@ NumberModule.directive 'smartNumber',
 
                 return if invalidInput(elem, event, options)
 
-                if event.which >= 48 and event.which <= 57 # insert number character
+                keycode = event.which
+
+                if keycode >= 48 and keycode <= 57 # insert number character
                   insertCharacter(elem, event)
 
-                # if a key has been pressed and a reformat is required, do it
-                if event.which == 8 # backspace is pressed
-                  backspacePressed(elem, event) # handle logic for backspace
                 else
                   if elem.val().length == 4 || elem.val().length == 8 # a new comma is added
                     newCursorPosition = elem[0].selectionStart + 1
