@@ -37,7 +37,7 @@ NumberModule.directive 'smartNumber',
       controlKeys.indexOf(which) >= 0
 
     invalidInput = (elem, event, options) ->
-      invalidKey(event) or invalidZero(elem, event) or maxDigitsReached(elem, options)
+      invalidKey(event) or invalidZero(elem, event)
 
     # invalid actions
     invalidKey = (event) ->
@@ -71,6 +71,18 @@ NumberModule.directive 'smartNumber',
     makeMaxDigits = (maxDigits) ->
         validRegex = new RegExp "^-?\\d{0,#{maxDigits}}(\\.\\d*)?$"
         (val) -> validRegex.test val
+
+    killEvent = (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+    findNewCursorPosition = (elem) ->
+      if elem.val().length == 4 || elem.val().length == 8 # a new comma is added
+        elem[0].selectionStart + 1
+      else if elem[0].selectionStart < elem.val().length # cursor is adding numbers, but is not at the end of the input field
+        elem[0].selectionStart
+      else # cursor is adding numbers at the end of the input field
+        elem[0].selectionStart + 1
 
     backspaceAtComma = (elem, event) ->
       cursorPos = elem[0].selectionStart
@@ -212,52 +224,34 @@ NumberModule.directive 'smartNumber',
                 # elem.val val.replace /,/g, '' # ATTN: LINE THAT ADDS ON-CLICK COMMA REMOVAL
                 elem[0].select()
 
-            elem.on 'keydown', (event)->
+            elem.on 'keydown', (event) ->
               keycode = event.which
+              killEvent(event) unless keycode == 37 || keycode == 39 # kill the standard event
 
-              return if invalidInput(elem, event, options) 
+              return if invalidInput(elem, event, options)
+
+              if keycode >= 48 and keycode <= 57 # insert number character
+                return if maxDigitsReached(event, options)
+                insertCharacter(elem, event)
 
               if keycode == 8 # backspace is pressed
-                event.preventDefault()
-                event.stopPropagation()
+                alert("snakes!")
                 backspacePressed(elem, event) # handle logic for backspace
-              else if keycode == 46 # backspace is pressed
-                event.preventDefault()
-                event.stopPropagation()
+              
+              if keycode == 46 # backspace is pressed
                 deletePressed(elem, event) # handle logic for backspace
 
-              if elem.val().length == 4 || elem.val().length == 8 # a new comma is added
-                newCursorPosition = elem[0].selectionStart + 1
-              else if elem[0].selectionStart < elem.val().length # cursor is adding numbers, but is not at the end of the input field
-                newCursorPosition = elem[0].selectionStart
-              else # cursor is adding numbers at the end of the input field
-                newCursorPosition = elem[0].selectionStart + 1
+              ## determine cursor position
+              newCursorPosition = findNewCursorPosition(elem)
 
               elem.val resetCommas(elem.val()) # reformat the number in place
               elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+              
+            elem.on 'keypress', (event) ->
+              killEvent(event)
 
-            if options.preventInvalidInput == true
-              elem.on 'keypress', (event) ->
-                event.preventDefault()
-                event.stopPropagation()
-
-                return if invalidInput(elem, event, options)
-
-                keycode = event.which
-
-                if keycode >= 48 and keycode <= 57 # insert number character
-                  insertCharacter(elem, event)
-
-                else
-                  if elem.val().length == 4 || elem.val().length == 8 # a new comma is added
-                    newCursorPosition = elem[0].selectionStart + 1
-                  else if elem[0].selectionStart < elem.val().length # cursor is adding numbers, but is not at the end of the input field
-                    newCursorPosition = elem[0].selectionStart
-                  else # cursor is adding numbers at the end of the input field
-                    newCursorPosition = elem[0].selectionStart + 1
-
-                elem.val resetCommas(elem.val()) # reformat the number in place
-                elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+              if keycode == 8 # backspace is pressed
+                alert("snakes!")
 
     }
 ]
