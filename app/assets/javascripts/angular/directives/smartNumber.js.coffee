@@ -87,13 +87,16 @@ NumberModule.directive 'smartNumber',
         initialPosition + 1
 
     findNewDeleteCursorPosition = (elem, initialPosition) ->
-      initialPosition
-
-    findNewBackspaceCursorPosition = (elem, initialPosition) ->
       if elem.val().length == 3 || elem.val().length == 7 # a comma has been removed
         return initialPosition - 1
       else # cursor is adding numbers at the end of the input field
         return initialPosition
+
+    findNewBackspaceCursorPosition = (elem, initialPosition) ->
+      if elem.val().length == 3 || elem.val().length == 7 # a comma has been removed
+        return initialPosition - 2
+      else # cursor is adding numbers at the end of the input field
+        return initialPosition - 1
 
     backspaceAtComma = (elem, event) ->
       cursorPos = elem[0].selectionStart
@@ -237,7 +240,7 @@ NumberModule.directive 'smartNumber',
 
             elem.on 'keydown', (event) ->
               keycode = event.which
-              killEvent(event) unless keycode == 37 || keycode == 39 # kill the standard event
+              killEvent(event) unless keycode == 37 || keycode == 39
 
               return if invalidInput(elem, event)
               # unless isControlKey(keycode)
@@ -246,27 +249,27 @@ NumberModule.directive 'smartNumber',
               initialPosition = elem[0].selectionStart 
 
               if keycode >= 48 and keycode <= 57 # insert number character
-                insertCharacter(elem, event)
-                elem.val resetCommas(elem.val()) # reformat the number in place
-                newCursorPosition = findNewCharacterCursorPosition(elem, initialPosition)
+                unless maxDigitsReached(elem, 9)
+                  insertCharacter(elem, event)
+                  elem.val resetCommas(elem.val()) # reformat the number in place
+                  newCursorPosition = findNewCharacterCursorPosition(elem, initialPosition)
+                  elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
 
               if keycode == 8 # backspace is pressed
                 backspacePressed(elem, event) # handle logic for backspace
                 elem.val resetCommas(elem.val()) # reformat the number in place
                 newCursorPosition = findNewBackspaceCursorPosition(elem, initialPosition)
+                elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
               
               if keycode == 46 # backspace is pressed
                 deletePressed(elem, event) # handle logic for backspace
                 elem.val resetCommas(elem.val()) # reformat the number in place
                 newCursorPosition = findNewDeleteCursorPosition(elem, initialPosition)
+                elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
 
-              elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
               
             elem.on 'keypress', (event) ->
               killEvent(event)
-
-              if keycode == 8 # backspace is pressed
-                alert("snakes!")
 
     }
 ]
