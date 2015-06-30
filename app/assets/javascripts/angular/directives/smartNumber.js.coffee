@@ -80,7 +80,7 @@ NumberModule.directive 'smartNumber',
 
     # helper methods for finding the new cursor position based on input type
     findNewCharacterCursorPosition = (elem, initialPosition) ->
-      if elem.val().length == 3 || elem.val().length == 7 # a new comma is added
+      if elem.val().length == 3 || elem.val().length == 7 # a new comma will be added
         initialPosition + 2
       else if elem[0].selectionStart < elem.val().length # cursor is adding numbers, but is not at the end of the input field
         initialPosition + 1
@@ -88,7 +88,7 @@ NumberModule.directive 'smartNumber',
         initialPosition + 1
 
     findNewDeleteCursorPosition = (elem, initialPosition) ->
-      if elem.val().length == 5 || elem.val().length == 9 # a comma has been removed
+      if elem.val().length == 5 || elem.val().length == 9 # a comma will be removed
         if commaAfterCursor(elem)
           return initialPosition
         else
@@ -97,26 +97,21 @@ NumberModule.directive 'smartNumber',
         return initialPosition
 
     findNewBackspaceCursorPosition = (elem, initialPosition) ->
-      if elem.val().length == 5 || elem.val().length == 9 # a comma has been removed
+      if elem.val().length == 5 || elem.val().length == 9 # a comma will be removed
         return initialPosition - 2
       else # cursor is adding numbers at the end of the input field
-        return initialPosition - 1
+        if commaBeforeCursor(elem)
+          return initialPosition - 2
+        else
+          return initialPosition - 1
 
-    backspaceAtComma = (elem, event) ->
-      cursorPos = elem[0].selectionStart
-      elem.val().charAt(elem[0].selectionStart - 1) == "," and event.which == 8
-    
     commaAfterCursor = (elem) ->
       cursorPos = elem[0].selectionStart
       elem.val().charAt(cursorPos) == ","
 
-    moveCursorLeft = (elem) ->
-      newCursorPos = elem[0].selectionStart - 1
-      elem[0].setSelectionRange(newCursorPos, newCursorPos)
-
-    moveCursorRight = (elem) ->
-      newCursorPos = elem[0].selectionStart + 1
-      elem[0].setSelectionRange(newCursorPos, newCursorPos)
+    commaBeforeCursor = (elem) ->
+      cursorPos = elem[0].selectionStart - 1
+      elem.val().charAt(cursorPos) == ","
 
     # logic for handling insertion of number characters
     insertCharacter = (elem, event) ->
@@ -130,7 +125,10 @@ NumberModule.directive 'smartNumber',
     backspacePressed = (elem, event) ->
       originalValue = elem.val() # the original value of the field before keypress
       position = elem[0].selectionStart # cursor position
-      newValue = [originalValue.slice(0, position - 1), originalValue.slice(position)].join('') # insert the new number into the field
+      if commaBeforeCursor(elem)
+        newValue = [originalValue.slice(0, position - 2), originalValue.slice(position)].join('') # insert the new number into the field
+      else
+        newValue = [originalValue.slice(0, position - 1), originalValue.slice(position)].join('') # insert the new number into the field
       elem.val(newValue) # replace the original value with the new one
 
     # handle delete keypresses
