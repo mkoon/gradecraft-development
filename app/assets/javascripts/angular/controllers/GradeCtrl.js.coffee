@@ -8,7 +8,6 @@
     gradeId = gradeParams.id
     $scope.rawScoreUpdating = false
     $scope.hasChanges = false
-    $scope.debouncedUpdate = null
 
     $scope.froalaOptions = {
       inlineMode: false,
@@ -31,14 +30,15 @@
     this.status = grade["status"]
     this.raw_score = grade["raw_score"]
     this.feedback = grade["feedback"]
+    this.debouncedUpdate = null
 
   GradePrototype.prototype = {
-    change: ()->
-      $scope.resetChanges()
-      $scope.startDebouncedUpdate()
+    keydown: ()->
+      this.resetChanges()
+      this.startDebouncedUpdate()
 
     startDebouncedUpdate: ()->
-      $scope.debouncedUpdate = debounce((->
+      this.debouncedUpdate = lodash.debounce((->
         self = this
         $http.put("/grades/#{self.id}/async_update", self).success(
           (data,status)->
@@ -57,7 +57,7 @@
       }
 
     resetChanges: ()->
-      $scope.debouncedUpdate = null
+      this.debouncedUpdate = null
   }
 
 ]
