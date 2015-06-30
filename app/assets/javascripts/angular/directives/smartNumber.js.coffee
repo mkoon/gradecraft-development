@@ -211,12 +211,6 @@ NumberModule.directive 'smartNumber',
               return if invalidInput(elem, event)
 
             elem.on 'blur', ->
-                viewValue = ngModelCtrl.$modelValue
-                return if !viewValue? || !isValid(viewValue)
-                for formatter in ngModelCtrl.$formatters
-                    viewValue = formatter(viewValue)
-                ngModelCtrl.$viewValue = viewValue
-                ngModelCtrl.$render()
 
             elem.on 'focus', ->
                 val = elem.val()

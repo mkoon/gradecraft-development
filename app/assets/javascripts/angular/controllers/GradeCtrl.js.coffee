@@ -30,22 +30,40 @@
     this.status = grade["status"]
     this.raw_score = grade["raw_score"]
     this.feedback = grade["feedback"]
-    this.debouncedUpdate = null
+    this.updateProxy = this.update
 
   GradePrototype.prototype = {
     keydown: ()->
-      this.resetChanges()
-      this.startDebouncedUpdate()
+      this.throttledUpdate()
 
-    startDebouncedUpdate: ()->
-      self = this
-      _.throttle( self.update(), 5000 )
+    throttledUpdate: ()->
+      this.throttle(this.update(), 2000)
+
+    throttle: (callback, limit)->
+      wait = false
+      # Initially, we're not waiting
+      ->
+        # We return a throttled function
+        if !wait
+          # If we're not waiting
+          callback.call()
+          # Execute users function
+          wait = true
+          # Prevent future invocations
+          setTimeout (->
+            # After a period of time
+            wait = false
+            # And allow future invocations
+            return
+          ), limit
+        return
+
 
     update: ()->
+      alert("update!!")
       self = this
       $http.put("/grades/#{self.id}/async_update", self).success(
         (data,status)->
-          self.resetChanges()
       )
       .error((err)->
       )
@@ -58,8 +76,6 @@
         feedback: this.feedback
       }
 
-    resetChanges: ()->
-      this.debouncedUpdate = null
   }
 
 ]
