@@ -89,7 +89,10 @@ NumberModule.directive 'smartNumber',
 
     findNewDeleteCursorPosition = (elem, initialPosition) ->
       if elem.val().length == 5 || elem.val().length == 9 # a comma has been removed
-        return initialPosition - 1
+        if commaAfterCursor(elem)
+          return initialPosition
+        else
+          return initialPosition - 1
       else # cursor is adding numbers at the end of the input field
         return initialPosition
 
@@ -103,9 +106,9 @@ NumberModule.directive 'smartNumber',
       cursorPos = elem[0].selectionStart
       elem.val().charAt(elem[0].selectionStart - 1) == "," and event.which == 8
     
-    deleteAtComma = (elem, event) ->
+    commaAfterCursor = (elem) ->
       cursorPos = elem[0].selectionStart
-      elem.val().charAt(cursorPos) == "," and event.which == 46
+      elem.val().charAt(cursorPos) == ","
 
     moveCursorLeft = (elem) ->
       newCursorPos = elem[0].selectionStart - 1
@@ -134,7 +137,7 @@ NumberModule.directive 'smartNumber',
     deletePressed = (elem, event) ->
       originalValue = elem.val() # the original value of the field before keypress
       position = elem[0].selectionStart # cursor position
-      if deleteAtComma(elem, event)
+      if commaAfterCursor(elem)
         newValue = [originalValue.slice(0, position), originalValue.slice(position + 2)].join('') # insert the new number into the field
       else
         newValue = [originalValue.slice(0, position), originalValue.slice(position + 1)].join('') # insert the new number into the field
