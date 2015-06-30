@@ -1,4 +1,7 @@
-@gradecraft = angular.module('gradecraft', ['restangular', 'ui.sortable', 'ng-rails-csrf', 'ngResource', 'ngAnimate', 'froala', 'smart-number'])
+angular.module('lodash', []).constant('_', window._)
+
+@gradecraft = angular.module('gradecraft', ['restangular', 'ui.sortable', 'ng-rails-csrf', 'ngResource', 'ngAnimate', 'froala', 'smart-number', 'lodash'])
+
 
 @gradecraft.directive "modalDialog", ->
   restrict: "E"
@@ -18,6 +21,7 @@
     return
 
   template: "..." # See below
+
 
 INTEGER_REGEXP = /^\-?\d+$/
 @gradecraft.directive "integer", ->

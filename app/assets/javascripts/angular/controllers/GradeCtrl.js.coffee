@@ -1,4 +1,4 @@
-@gradecraft.controller 'GradeCtrl', ['$rootScope', '$scope', 'GradePrototype', '$window', '$http' , ($rootScope, $scope, GradePrototype, $window, $http) -> 
+@gradecraft.controller 'GradeCtrl', ['$rootScope', '$scope', 'GradePrototype', '$window', '$http', '_', ($rootScope, $scope, GradePrototype, $window, $http, _) -> 
 
 
   $scope.init = (params)->
@@ -38,15 +38,17 @@
       this.startDebouncedUpdate()
 
     startDebouncedUpdate: ()->
-      this.debouncedUpdate = lodash.debounce((->
-        self = this
-        $http.put("/grades/#{self.id}/async_update", self).success(
-          (data,status)->
-            self.resetChanges()
-        )
-        .error((err)->
-        )
-      ), 2000)
+      self = this
+      _.throttle( self.update(), 5000 )
+
+    update: ()->
+      self = this
+      $http.put("/grades/#{self.id}/async_update", self).success(
+        (data,status)->
+          self.resetChanges()
+      )
+      .error((err)->
+      )
 
     params: ()->
       {
