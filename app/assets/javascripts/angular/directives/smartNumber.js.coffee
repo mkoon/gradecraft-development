@@ -175,16 +175,6 @@ NumberModule.directive 'smartNumber',
       stripped = val.replace(/,/g, "")
       numberWithCommas(stripped)
 
-    # update handling
-    triggerUpdate = (scope, elem) ->
-      if scope.grade.raw_score != elem.val()
-        scope.grade.customUpdate(elem.val())
-      scope.rawScoreUpdating = false
-
-    beginUpdate = (scope, elem)->
-      scope.rawScoreUpdating = true
-      setTimeout(triggerUpdate(scope, elem), 1400)
-
     {
         restrict: 'A'
         require: 'ngModel'
@@ -219,9 +209,6 @@ NumberModule.directive 'smartNumber',
             elem.on 'keyup', (event) ->
 
               return if invalidInput(elem, event)
-
-              if scope.rawScoreUpdating == false
-                beginUpdate(scope, elem)
 
             elem.on 'blur', ->
                 viewValue = ngModelCtrl.$modelValue

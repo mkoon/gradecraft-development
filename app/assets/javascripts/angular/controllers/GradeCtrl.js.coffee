@@ -5,10 +5,10 @@
     $scope.header = "waffles" 
     gradeParams = params["grade"]
     $scope.grade = new GradePrototype(gradeParams)
-    $scope.grade.addWatchers()
     gradeId = gradeParams.id
     $scope.rawScoreUpdating = false
     $scope.hasChanges = false
+    $scope.debouncedUpdate = null
 
     $scope.froalaOptions = {
       inlineMode: false,
@@ -34,34 +34,11 @@
 
   GradePrototype.prototype = {
     change: ()->
-      if $scope.hasChanges == false
-        $scope.hasChanges = true
+      $scope.resetChanges()
+      $scope.startDebouncedUpdate()
 
-    update: ()->
-      self = this
-      $http.put("/grades/#{self.id}/async_update", self).success(
-        (data,status)->
-          self.resetChanges()
-      )
-      .error((err)->
-      )
-
-    customUpdate: (fcsaValue)->
-      self = this
-      $http.put("/grades/#{self.id}/async_update", {raw_score: fcsaValue} ).success(
-        (data,status)->
-          self.resetChanges()
-      )
-      .error((err)->
-      )
-
-    addWatchers: ()->
-      $scope.$watch('grade.feedback', (()->
-        $scope.grade.update()
-        ), true)
-
-    debouncedUpdate: ()->
-      debounce((->
+    startDebouncedUpdate: ()->
+      $scope.debouncedUpdate = debounce((->
         self = this
         $http.put("/grades/#{self.id}/async_update", self).success(
           (data,status)->
@@ -71,15 +48,6 @@
         )
       ), 2000)
 
-    unloadUpdate: ()->
-      self = this
-      $http.put("/grades/#{self.id}/async_update", self).success(
-        (data,status)->
-          self.resetChanges()
-      )
-      .error((err)->
-      )
-
     params: ()->
       {
         id: self.id,
@@ -87,8 +55,9 @@
         raw_score: this.raw_score,
         feedback: this.feedback
       }
+
     resetChanges: ()->
-      this.hasChanges = false
+      $scope.debouncedUpdate = null
   }
 
 ]
