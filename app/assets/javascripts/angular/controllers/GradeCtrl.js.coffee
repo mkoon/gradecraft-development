@@ -1,6 +1,5 @@
 @gradecraft.controller 'GradeCtrl', ['$rootScope', '$scope', 'GradePrototype', '$window', '$http', '_', ($rootScope, $scope, GradePrototype, $window, $http, _) -> 
 
-
   $scope.init = (params)->
     $scope.header = "waffles" 
     gradeParams = params["grade"]
@@ -30,37 +29,18 @@
     this.status = grade["status"]
     this.raw_score = grade["raw_score"]
     this.feedback = grade["feedback"]
-    this.updateProxy = this.update
 
   GradePrototype.prototype = {
-    keydown: ()->
-      this.throttledUpdate()
-
-    throttledUpdate: ()->
-      this.throttle(this.update(), 2000)
-
-    throttle: (callback, limit)->
-      wait = false
-      # Initially, we're not waiting
-      ->
-        # We return a throttled function
-        if !wait
-          # If we're not waiting
-          callback.call()
-          # Execute users function
-          wait = true
-          # Prevent future invocations
-          setTimeout (->
-            # After a period of time
-            wait = false
-            # And allow future invocations
-            return
-          ), limit
-        return
-
+    modelOptions: ()->
+      {
+        updateOn: 'default blur',
+        debounce: {
+          default: 1800,
+          blur: 0
+        }
+      }
 
     update: ()->
-      alert("update!!")
       self = this
       $http.put("/grades/#{self.id}/async_update", self).success(
         (data,status)->

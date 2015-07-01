@@ -26,10 +26,12 @@
               label: "Score",
               hint: "Total Assignment Points: #{ points @assignment.point_total }",
               "ng-model" => "grade.raw_score",
-              "ng-keydown" => "grade.keydown()",
+              "ng-change" => "alert('change!!')",
+              "ng-model-options" => "grade.modelOptions()",
               "placeholder" => "Enter raw score for grade",
               "smart-number" => "",
               "smart-number-options" => "{ maxDigits: 9, preventInvalidInput: true }"
+
 
             -#data: {autonumeric: true, "m-dec" => "0", "v-max" => "999999999"},
 
