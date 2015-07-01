@@ -78,6 +78,9 @@ NumberModule.directive 'smartNumber',
       event.preventDefault()
       event.stopPropagation()
 
+    triggerChange = (elem) ->
+      elem.trigger("change")
+
     # helper methods for finding the new cursor position based on input type
     findNewCharacterCursorPosition = (elem, initialPosition) ->
       if elem.val().length == 3 || elem.val().length == 7 # a new comma will be added
@@ -223,7 +226,7 @@ NumberModule.directive 'smartNumber',
 
             elem.on 'keydown', (event) ->
               keycode = event.which
-              killEvent(event) unless keycode == 37 || keycode == 39
+              killEvent(event) unless keycode == 37 || keycode == 39 || keycode == 9
 
               return if invalidInput(elem, event)
               # unless isControlKey(keycode)
@@ -237,6 +240,7 @@ NumberModule.directive 'smartNumber',
                   insertCharacter(elem, event)
                   elem.val resetCommas(elem.val()) # reformat the number in place
                   elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+                  triggerChange(elem)
 
               if keycode == 8 # backspace is pressed
                 unless elem[0].selectionStart == 0 # do nothing if it's at the end of the end of the input
@@ -244,6 +248,7 @@ NumberModule.directive 'smartNumber',
                   backspacePressed(elem, event) # handle logic for backspace
                   elem.val resetCommas(elem.val()) # reformat the number in place
                   elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+                  triggerChange(elem)
               
               if keycode == 46 # delete is pressed
                 unless elem[0].selectionStart == elem.val().length
@@ -251,6 +256,7 @@ NumberModule.directive 'smartNumber',
                   deletePressed(elem, event) # handle logic for backspace
                   elem.val resetCommas(elem.val()) # reformat the number in place
                   elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+                  triggerChange(elem)
               
             elem.on 'keypress', (event) ->
               killEvent(event)
