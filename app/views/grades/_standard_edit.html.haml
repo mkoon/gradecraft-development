@@ -37,7 +37,19 @@
 
         - if @assignment.release_necessary?
           .small-12.large-4.columns
-            = f.input :status,  as: :select, :collection => ["In Progress", "Graded", "Released"], :selected => @grade.status, :include_blank => true
+            .input.select.optional.grade_status
+              %label.select.optional(for="grade_status") Status
+              %select.select.optional(name="grade[status]" id="grade_status" ng-model="grade.status" ng-change="grade.update()")
+                <option value=""></option>
+
+            = f.input :status,
+              as: :select,
+              :collection => ["In Progress", "Graded", "Released"],
+              :selected => @grade.status,
+              :include_blank => true,
+              "ng-model" => "grade.status",
+              "ng-change" => "grade.update()"
+
             .form_label Can the student see this grade?
         - elsif @grade.status.blank?
           = f.hidden_field :status, value: 'Graded'
@@ -47,7 +59,7 @@
           = f.label :feedback
           = f.text_area :feedback,
             "froala" => "froalaOptions",
-            "ng-change" => "grade.change()",
+            "ng-change" => "grade.update()",
             "ng-model" => "grade.feedback",
             "ng-model-options" => "{ debounce: 1000 }"
         .clear
