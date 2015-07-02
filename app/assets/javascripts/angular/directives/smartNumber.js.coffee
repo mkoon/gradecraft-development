@@ -7,6 +7,10 @@ NumberModule.directive 'smartNumber',
 
     # 0 = tab, 8 = backspace , 13 = enter, 46 = delete, 37 = left arrow, 39 = right arrow
     controlKeys = [0,8,13, 46, 37, 39] 
+
+    # 37 = left arrow, 39 = right arrow, 9 = enter, 33 = page up, 34 = page down
+    inertKeys = [37, 39, 9, 33, 34]
+
     keyCodes = { 48:0, 49:1, 50:2, 51:3, 52:4, 53:5, 54:6, 55:7, 56:8, 57:9 }
 
     getOptions = (scope, attrs) ->
@@ -37,6 +41,9 @@ NumberModule.directive 'smartNumber',
 
     isControlKey = (which) ->
       controlKeys.indexOf(which) >= 0
+
+    isInertKey = (which) ->
+      inertKeys.indexOf(which) >= 0
 
     invalidInput = (elem, event) ->
       invalidKey(event) or invalidZero(elem, event)
@@ -236,8 +243,8 @@ NumberModule.directive 'smartNumber',
 
             elem.on 'keydown', (event) ->
               keycode = event.which
-              killEvent(event) unless keycode == 37 || keycode == 39 || keycode == 9
 
+              killEvent(event) unless isInertKey(keycode)
 
               return if invalidInput(elem, event)
               # unless isControlKey(keycode)
