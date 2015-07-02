@@ -104,7 +104,8 @@ class GradesController < ApplicationController
   def base_async_params
     {
       feedback: params[:feedback],
-      instructor_modified: true
+      instructor_modified: true,
+      status: params[:status]
     }
   end
 
