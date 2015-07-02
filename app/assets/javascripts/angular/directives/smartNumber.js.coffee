@@ -148,6 +148,13 @@ NumberModule.directive 'smartNumber',
 
       elem.val(newValue) # replace the original value with the new one
 
+    deleteSelectedRange = (elem, event) ->
+      originalValue = elem.val() # the original value of the field before keypress
+      startPosition = elem[0].selectionStart # beginning of selected range
+      endPosition = elem[0].selectionEnd # end of selected range
+      newValue = [originalValue.slice(0, startPosition), originalValue.slice(endPosition)].join('') # insert the new number into the field
+      elem.val(newValue) # replace the original value with the new one
+
     makeIsValid = (options) ->
         validations = []
         
@@ -231,6 +238,7 @@ NumberModule.directive 'smartNumber',
               keycode = event.which
               killEvent(event) unless keycode == 37 || keycode == 39 || keycode == 9
 
+
               return if invalidInput(elem, event)
               # unless isControlKey(keycode)
                 # return if maxDigitsReached(event, 9) 
@@ -246,19 +254,68 @@ NumberModule.directive 'smartNumber',
                   triggerChange(elem)
 
               if keycode == 8 # backspace is pressed
-                unless elem[0].selectionStart == 0 # do nothing if it's at the end of the end of the input
+
+                if elem[0].selectionEnd > elem[0].selectionStart # text is highlighted
+                  # get the string before the selection and figure out how many commas it has
+                  originalCursorPosition = elem[0].selectionStart
+                  stringBeforeCursor = elem.val().slice(0, originalCursorPosition)
+                  startingCommasBeforeCursor = (stringBeforeCursor.match(/,/g) || []).length
+
+                  # delete the selected stuff and reset the commas
+                  deleteSelectedRange(elem, event)
+                  elem.val resetCommas(elem.val()) # reformat the number in place
+
+                  # figure out how many commas were lost
+                  finalStringBeforeCursor = elem.val().slice(0, originalCursorPosition)
+                  endingCommasBeforeCursor = (finalStringBeforeCursor.match(/,/g) || []).length
+                  commaDiff = startingCommasBeforeCursor - endingCommasBeforeCursor
+
+                  # set the final cursor position
+                  finalCursorPosition = originalCursorPosition - commaDiff
+                  elem[0].setSelectionRange(finalCursorPosition, finalCursorPosition) # set the new cursor position
+
+                  # trigger final change event
+                  triggerChange(elem)
+
+                else unless elem[0].selectionStart == 0 # do nothing if it's at the end of the end of the input
                   newCursorPosition = findNewBackspaceCursorPosition(elem, initialPosition)
                   backspacePressed(elem, event) # handle logic for backspace
                   elem.val resetCommas(elem.val()) # reformat the number in place
                   elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+
+                  # trigger final change event
                   triggerChange(elem)
               
               if keycode == 46 # delete is pressed
-                unless elem[0].selectionStart == elem.val().length
+                if elem[0].selectionEnd > elem[0].selectionStart # text is highlighted
+                  # get the string before the selection and figure out how many commas it has
+                  originalCursorPosition = elem[0].selectionStart
+                  stringBeforeCursor = elem.val().slice(0, originalCursorPosition)
+                  startingCommasBeforeCursor = (stringBeforeCursor.match(/,/g) || []).length
+
+                  # delete the selected stuff and reset the commas
+                  deleteSelectedRange(elem, event)
+                  elem.val resetCommas(elem.val()) # reformat the number in place
+
+                  # figure out how many commas were lost
+                  finalStringBeforeCursor = elem.val().slice(0, originalCursorPosition)
+                  endingCommasBeforeCursor = (finalStringBeforeCursor.match(/,/g) || []).length
+                  commaDiff = startingCommasBeforeCursor - endingCommasBeforeCursor
+
+                  # set the final cursor position
+                  finalCursorPosition = originalCursorPosition - commaDiff
+                  elem[0].setSelectionRange(finalCursorPosition, finalCursorPosition) # set the new cursor position
+
+                  # trigger final change event
+                  triggerChange(elem)
+
+                else unless elem[0].selectionStart == elem.val().length
                   newCursorPosition = findNewDeleteCursorPosition(elem, initialPosition)
                   deletePressed(elem, event) # handle logic for backspace
                   elem.val resetCommas(elem.val()) # reformat the number in place
                   elem[0].setSelectionRange(newCursorPosition, newCursorPosition) # set the new cursor position
+
+                  # trigger final change event
                   triggerChange(elem)
               
             elem.on 'keypress', (event) ->
