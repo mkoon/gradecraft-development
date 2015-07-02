@@ -97,7 +97,10 @@ NumberModule.directive 'smartNumber',
         else
           return initialPosition - 1
       else # cursor is adding numbers at the end of the input field
-        return initialPosition
+        if commaAfterCursor(elem)
+          return initialPosition + 1
+        else
+          return initialPosition
 
     findNewBackspaceCursorPosition = (elem, initialPosition) ->
       if elem.val().length == 5 || elem.val().length == 9 # a comma will be removed
