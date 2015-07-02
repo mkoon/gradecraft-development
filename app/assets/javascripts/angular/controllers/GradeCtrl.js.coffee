@@ -7,7 +7,7 @@
     gradeId = gradeParams.id
     $scope.rawScoreUpdating = false
     $scope.hasChanges = false
-    $scope.gradeStatuses = ["", "In Progress", "Graded", "Released"]
+    $scope.gradeStatuses = ["In Progress", "Graded", "Released"]
 
     $scope.froalaOptions = {
       inlineMode: false,
