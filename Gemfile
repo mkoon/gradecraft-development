@@ -72,7 +72,7 @@ group :development do
   gem 'letter_opener'
   gem 'rack-mini-profiler', require: false
   gem 'rubystats'
-  gem 'spring'
+  gem 'spring', '~> 1.3.6'
   gem 'byebug'
 end
 

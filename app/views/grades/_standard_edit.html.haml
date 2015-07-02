@@ -40,15 +40,7 @@
             .input.select.optional.grade_status
               %label.select.optional(for="grade_status") Status
               %select.select.optional(name="grade[status]" id="grade_status" ng-model="grade.status" ng-change="grade.update()")
-                <option value=""></option>
-
-            = f.input :status,
-              as: :select,
-              :collection => ["In Progress", "Graded", "Released"],
-              :selected => @grade.status,
-              :include_blank => true,
-              "ng-model" => "grade.status",
-              "ng-change" => "grade.update()"
+                <option value="{{grade_status}}" ng-repeat="grade_status in gradeStatuses" ng-selected="grade_status == grade.status">{{grade_status}}</option>
 
             .form_label Can the student see this grade?
         - elsif @grade.status.blank?
