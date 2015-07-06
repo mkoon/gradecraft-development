@@ -5,8 +5,8 @@ NumberModule.directive 'smartNumber',
 
     defaultOptions = smartNumberConfig.defaultOptions
 
-    # 0 = tab, 8 = backspace , 13 = enter, 46 = delete, 37 = left arrow, 39 = right arrow
-    controlKeys = [0,8,13, 46, 37, 39] 
+    # 0 = tab, 8 = backspace , 13 = enter, 46 = delete, 37 = left arrow, 39 = right arrow, 65 = A
+    controlKeys = [0,8,13, 46, 37, 39, 65] 
 
     # 37 = left arrow, 39 = right arrow, 9 = enter, 33 = page up, 34 = page down
     inertKeys = [37, 39, 9, 33, 34]
@@ -41,6 +41,9 @@ NumberModule.directive 'smartNumber',
 
     isBackspace = (event)->
       event.which == 8
+
+    isLetterA = (event)->
+      event.which == 65
 
     getOptions = (scope, attrs) ->
         options = angular.copy defaultOptions
@@ -306,7 +309,7 @@ NumberModule.directive 'smartNumber',
 
                 if isBackspace(event)
                   # get the string before the selection and figure out how many commas it has
-                  originalCursorPosition = elem[0].selectionStart
+                  originalCursorPosition = elem[0].selectionEnd
                   stringAfterCursor = elem.val().slice(originalCursorPosition, elem.val().length)
                   elem.val resetCommas(stringAfterCursor) # reformat the number in place
 
@@ -315,6 +318,9 @@ NumberModule.directive 'smartNumber',
 
                   # trigger final change event
                   triggerChange(elem)
+
+                if event.which == 65
+                  elem[0].setSelectionRange(0, elem.val().length) # highlight the entire field
 
               else
 
