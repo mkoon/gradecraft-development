@@ -266,15 +266,10 @@ NumberModule.directive 'smartNumber',
               return if invalidInput(elem, event)
 
             elem.on 'blur', ->
+              scope.ctrlDownCount = 0
 
             elem.on 'focus', ->
-                val = elem.val()
-                if options.prepend?
-                  val = val.replace options.prepend, ''
-                if options.append?
-                  val = val.replace options.append, ''
-                # elem.val val.replace /,/g, '' # ATTN: LINE THAT ADDS ON-CLICK COMMA REMOVAL
-                elem[0].select()
+              scope.ctrlDownCount = 0
 
             elem.on 'keydown', (event) ->
               keycode = event.which
@@ -290,6 +285,7 @@ NumberModule.directive 'smartNumber',
               
               # find the cursor position
               initialPosition = elem[0].selectionStart 
+
 
               # do different stuff if ctrl is pressed
               if scope.ctrlDownCount > 0
