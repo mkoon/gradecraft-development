@@ -19,6 +19,7 @@
         .small-12.medium-4.columns
           = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
           - if @assignment.has_levels?
+            -# TODO: still need to add support for levels
             = f.select :raw_score, @assignment_score_levels.map { |l| [l.formatted_name,l.value] }, :include_blank => true
           - else
             = f.text_field :raw_score,

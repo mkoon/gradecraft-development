@@ -30,10 +30,17 @@ NumberModule.directive 'smartNumber',
       scope.ctrlDownCount > 0
 
     registerCtrl = (scope)->
-      scope.ctrlDownCount += 1
+      if scope.ctrlDownCount <= 1
+        scope.ctrlDownCount += 1
+      else
+        scope.ctrlDownCount = 2
 
     unregisterCtrl = (scope)->
-      scope.ctrlDownCount -= 1
+      # ctrlDownCount should never be less than zero
+      if scope.ctrlDownCount > 0
+        scope.ctrlDownCount -= 1
+      else
+        scope.ctrlDownCount = 0
 
     # key recognition helpers
     isDelete = (event)->
@@ -310,7 +317,7 @@ NumberModule.directive 'smartNumber',
                   elem.val resetCommas(stringAfterCursor) # reformat the number in place
 
                   # set the final cursor position
-                  elem[0].setSelectionRange(0, 0) # set the cursor at the beginning of the input field
+                  elem[0].setSelectionRange(1,1) # set the cursor at the beginning of the input field
 
                   # trigger final change event
                   triggerChange(elem)
