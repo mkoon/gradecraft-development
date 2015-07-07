@@ -1,7 +1,4 @@
 class ExistingMetricSerializer < ActiveModel::Serializer
-  cached
-  delegate :cache_key, to: :object
-
   attributes :id, :name, :description, :max_points, :rubric_id, :order
   has_many :tiers, serializer: ExistingTierSerializer
   has_many :metric_badges, serializer: ExistingMetricBadgeSerializer

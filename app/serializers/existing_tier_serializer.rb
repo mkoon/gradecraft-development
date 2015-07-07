@@ -1,7 +1,4 @@
 class ExistingTierSerializer < ActiveModel::Serializer
-  cached
-  delegate :cache_key, to: :object
-
   attributes :id, :name, :description, :points, :full_credit, :no_credit, :durable
   has_many :tier_badges, serializer: ExistingTierBadgeSerializer
 
