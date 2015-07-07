@@ -606,6 +606,3 @@ DEPENDENCIES
   valid_attribute
   whenever
   wysiwyg-rails
-
-BUNDLED WITH
-   1.10.4

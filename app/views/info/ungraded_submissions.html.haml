@@ -20,37 +20,38 @@
             %span.sr-only Actions
       %tbody
         - @ungraded_submissions.each do |submission|
-          %tr
-            %td= link_to submission.assignment.name, submission.assignment
-            - if submission.assignment.is_individual?
-              %td= link_to submission.student.try(:first_name), student_path(submission.student)
-              %td= link_to submission.student.try(:last_name), student_path(submission.student)
-            - elsif submission.assignment.has_groups?
-              %td= link_to submission.group.try(:name), group_path(submission.group)
+          - cache ["v1", submission] do
+            %tr
+              %td= link_to submission.assignment.name, submission.assignment
+              - if submission.assignment.is_individual?
+                %td= link_to submission.student.try(:first_name), student_path(submission.student)
+                %td= link_to submission.student.try(:last_name), student_path(submission.student)
+              - elsif submission.assignment.has_groups?
+                %td= link_to submission.group.try(:name), group_path(submission.group)
+                %td
+              %td= submission.updated_at
+              %td= submission.text_comment
               %td
-            %td= submission.updated_at
-            %td= submission.text_comment
-            %td
-              - if current_course.has_teams? && submission.assignment.is_individual? && submission.student.present? && submission.student.team_for_course(current_course).present?
-                = link_to submission.student.team_for_course(current_course).try(:name), submission.student.team_for_course(current_course)
-            - if submission.assignment.is_individual?
-              %td
-                .button-bar
-                  %ul.button-group.right.radius
-                    %li
-                      %a.button{:href => "#{assignment_submission_path(submission.assignment, :id => submission.id)}" }
-                        = "See Submission"
-                        - if submission.submission_files.present?
-                          %i.fi-paperclip
-                    %li= link_to 'Grade', edit_assignment_grade_path(:assignment_id => submission.assignment.id, :student_id => submission.student.try(:id)), :class => "button"
-            - else
-              %td
-                .button-bar
-                  %ul.button-group.right.radius
-                    %li
-                      %a.button{:href => "#{assignment_submission_path(submission.assignment, :id => submission.id)}" }
-                        = "See Submission"
-                        - if submission.submission_files.present?
-                          %i.fi-paperclip
-                    %li= link_to 'Grade', group_grade_assignment_path(submission.assignment, :group_id => submission.group), :class => "button"
+                - if current_course.has_teams? && submission.assignment.is_individual? && submission.student.present? && submission.student.team_for_course(current_course).present?
+                  = link_to submission.student.team_for_course(current_course).try(:name), submission.student.team_for_course(current_course)
+              - if submission.assignment.is_individual?
+                %td
+                  .button-bar
+                    %ul.button-group.right.radius
+                      %li
+                        %a.button{:href => "#{assignment_submission_path(submission.assignment, :id => submission.id)}" }
+                          = "See Submission"
+                          - if submission.submission_files.present?
+                            %i.fi-paperclip
+                      %li= link_to 'Grade', edit_assignment_grade_path(:assignment_id => submission.assignment.id, :student_id => submission.student.try(:id)), :class => "button"
+              - else
+                %td
+                  .button-bar
+                    %ul.button-group.right.radius
+                      %li
+                        %a.button{:href => "#{assignment_submission_path(submission.assignment, :id => submission.id)}" }
+                          = "See Submission"
+                          - if submission.submission_files.present?
+                            %i.fi-paperclip
+                      %li= link_to 'Grade', group_grade_assignment_path(submission.assignment, :group_id => submission.group), :class => "button"
     %br

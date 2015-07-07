@@ -6,12 +6,12 @@ class Submission < ActiveRecord::Base
 
   include Canable::Ables
 
-  belongs_to :task
-  belongs_to :assignment
-  belongs_to :student, :class_name => 'User'
-  belongs_to :creator, :class_name => 'User'
-  belongs_to :group
-  belongs_to :course
+  belongs_to :task, touch: true
+  belongs_to :assignment, touch: true
+  belongs_to :student, :class_name => 'User', touch: true
+  belongs_to :creator, :class_name => 'User', touch: true
+  belongs_to :group, touch: true
+  belongs_to :course, touch: true
 
   before_save :clean_html, :submit_something
 

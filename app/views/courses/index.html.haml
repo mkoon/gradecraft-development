@@ -30,30 +30,31 @@
             %span.sr-only Actions
       %tbody
         - @courses.each do |course|
-          %tr
-            %td= link_to course.name, course
-            %td= course.courseno
-            %td= course.year
-            %td= course.semester
-            %td
-            %td= points course.total_points
-            - if current_user_is_admin?
+          - cache ["v1", course] do
+            %tr
+              %td= link_to course.name, course
+              %td= course.courseno
+              %td= course.year
+              %td= course.semester
               %td
-                - if course == current_course
-                  = link_to_unless_current "Export Grades for Research", research_gradebook_path, :class=>"data-clearing"
+              %td= points course.total_points
+              - if current_user_is_admin?
+                %td
+                  - if course == current_course
+                    = link_to_unless_current "Export Grades for Research", research_gradebook_path, :class=>"data-clearing"
 
-            %td
-              .button-bar
-                %ul.button-group.radius.right
-                  %li
-                    = link_to edit_course_path(course), :class => 'button' do
-                      Edit
-                      %span.sr-only #{course.name}
-                  %li
-                    = link_to course, :class => 'button', :data => { confirm: 'Are you sure?' }, :method => :delete do
-                      Delete
-                      %span.sr-only #{course.name}
-                  %li
-                    = link_to copy_courses_path(:id => course.id), :class => 'button', :method => :copy do
-                      Copy
-                      %span.sr-only #{course.name}
+              %td
+                .button-bar
+                  %ul.button-group.radius.right
+                    %li
+                      = link_to edit_course_path(course), :class => 'button' do
+                        Edit
+                        %span.sr-only #{course.name}
+                    %li
+                      = link_to course, :class => 'button', :data => { confirm: 'Are you sure?' }, :method => :delete do
+                        Delete
+                        %span.sr-only #{course.name}
+                    %li
+                      = link_to copy_courses_path(:id => course.id), :class => 'button', :method => :copy do
+                        Copy
+                        %span.sr-only #{course.name}

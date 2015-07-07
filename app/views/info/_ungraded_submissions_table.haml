@@ -3,56 +3,58 @@
   .label.alert.radius= @count_ungraded
 
 - @ungraded_submissions_by_assignment.each do |assignment, submissions|
-  .small-12.columns
-    %h5.section-title
-      = link_to assignment.name, assignment
-      .right
-        = link_to 'Quick Grade', mass_grade_assignment_path(assignment), :class => "button radius"
+  - cache ["v1", assignment] do
+    .small-12.columns
+      %h5.section-title
+        = link_to assignment.name, assignment
+        .right
+          = link_to 'Quick Grade', mass_grade_assignment_path(assignment), :class => "button radius"
 
-  .columns{:style => "overflow: auto"}
-    %table.responsive.no_radius.nofeatures_default_last_name_dynatable{"aria-describedby" => "ungradedTableCaption"}
-      %thead
-        %tr
-          - if assignment.is_individual?
-            %th{:scope => "col", :width => "7%"} First Name
-            %th{:scope => "col", :width => "7%"} Last Name
-            %th Date Submitted
-            - if course.has_teams?
-              %th{:scope => "col", :width => "15%"}= "#{term_for :team}"
-          - elsif assignment.has_groups?
-            %th{:scope => "col"} Group
-          %th{:scope => "col", :style => "min-width: 200px"}
-            %span.sr-only Actions
-      %tbody
-        - submissions.each do |ug|
-          - if ug.ungraded?
-            - student = ug.student
-            - team = student.team_for_course(course)
-            - ug_assignment = ug.assignment
-            - ug_group = ug.group
-            %tr
-              - if ug_assignment.is_individual?
-                %td= link_to student.try(:first_name), student_path(student)
-                %td= link_to student.try(:last_name), student_path(student)
-                %td= ug.updated_at
-                %td
-                  - if course.has_teams? && student.present? && team.present?
-                    = link_to team.try(:name), team
-                %td
-                  .button-bar
-                    %ul.button-group.right.radius
-                      %li
-                        %a.button{:href => "#{assignment_submission_path(ug_assignment, :id => ug.id)}" }
-                          = "See Submission"
-                          - if ug.submission_files.present?
-                            %i.fi-paperclip
-                      %li= link_to 'Grade', edit_assignment_grade_path(:assignment_id => assignment.id, :student_id => student.try(:id)), :class => "button"
-              - elsif ug_assignment.has_groups?
-                %td= link_to ug_group.try(:name), group_path(ug_group)
-                %td= ug.updated_at
-                %td
-                  .button-bar
-                    %ul.button-group.right.radius
-                      %li= link_to "See Submission", assignment_grade_path(ug_assignment, :group_id => ug_group.id), :class => "button"
-                      %li= link_to 'Grade', group_grade_assignment_path(ug_assignment, :group_id => ug_group), :class => "button"
-    %br
+    .columns{:style => "overflow: auto"}
+      %table.responsive.no_radius.nofeatures_default_last_name_dynatable{"aria-describedby" => "ungradedTableCaption"}
+        %thead
+          %tr
+            - if assignment.is_individual?
+              %th{:scope => "col", :width => "7%"} First Name
+              %th{:scope => "col", :width => "7%"} Last Name
+              %th Date Submitted
+              - if course.has_teams?
+                %th{:scope => "col", :width => "15%"}= "#{term_for :team}"
+            - elsif assignment.has_groups?
+              %th{:scope => "col"} Group
+            %th{:scope => "col", :style => "min-width: 200px"}
+              %span.sr-only Actions
+        %tbody
+          - submissions.each do |ug|
+            - cache ["v1", ug] do
+              - if ug.ungraded?
+                - student = ug.student
+                - team = student.team_for_course(course)
+                - ug_assignment = ug.assignment
+                - ug_group = ug.group
+                %tr
+                  - if ug_assignment.is_individual?
+                    %td= link_to student.try(:first_name), student_path(student)
+                    %td= link_to student.try(:last_name), student_path(student)
+                    %td= ug.updated_at
+                    %td
+                      - if course.has_teams? && student.present? && team.present?
+                        = link_to team.try(:name), team
+                    %td
+                      .button-bar
+                        %ul.button-group.right.radius
+                          %li
+                            %a.button{:href => "#{assignment_submission_path(ug_assignment, :id => ug.id)}" }
+                              = "See Submission"
+                              - if ug.submission_files.present?
+                                %i.fi-paperclip
+                          %li= link_to 'Grade', edit_assignment_grade_path(:assignment_id => assignment.id, :student_id => student.try(:id)), :class => "button"
+                  - elsif ug_assignment.has_groups?
+                    %td= link_to ug_group.try(:name), group_path(ug_group)
+                    %td= ug.updated_at
+                    %td
+                      .button-bar
+                        %ul.button-group.right.radius
+                          %li= link_to "See Submission", assignment_grade_path(ug_assignment, :group_id => ug_group.id), :class => "button"
+                          %li= link_to 'Grade', group_grade_assignment_path(ug_assignment, :group_id => ug_group), :class => "button"
+      %br

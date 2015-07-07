@@ -472,7 +472,6 @@ describe AssignmentsController do
         rubric = create(:rubric_with_metrics, assignment: @assignment)
         get :rubric_grades_review, :id => @assignment.id
         assigns(:rubric).should eq(rubric)
-        assigns(:metrics).should eq(rubric.metrics)
       end
 
       it "assigns assignment score levels ordered by value" do

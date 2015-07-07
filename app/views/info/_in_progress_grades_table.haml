@@ -3,51 +3,53 @@
   .label.alert.radius= @count_in_progress
 
 - @in_progress_grades_by_assignment.each do |assignment, grades|
-  .small-12.columns
-    %h5.section-title
-      = link_to assignment.name, assignment
-      .right= link_to 'Quick Grade', mass_grade_assignment_path(assignment), :class => "button radius"
+  - cache ["v1", assignment] do
+    .small-12.columns
+      %h5.section-title
+        = link_to assignment.name, assignment
+        .right= link_to 'Quick Grade', mass_grade_assignment_path(assignment), :class => "button radius"
 
-  = form_tag edit_status_grades_assignment_path assignment do
-    .columns
-      %table.responsive.no_radius.nofeatures_default_last_name_dynatable{"aria-describedby" => "inProgressTableCaption"}
-        %thead
-          %tr
-            - if assignment.is_individual?
-              %th{:scope => "col", :width => "8%"} First Name
-              %th{:scope => "col", :width => "8%"} Last Name
-              - if course.has_teams?
-                %th{:scope => "col", :width => "15%"}= "#{term_for :team}"
-            - elsif assignment.has_groups?
-              %th{:scope => "col"} Group
-            %th{:scope => "col", :width => "8%"} Score
-            %th{:scope => "col"} Feedback
-            %th{:scope => "col", "data-dynatable-no-sort" => "true", :width => "20%" }
-              %span.sr-only Actions
-            %th.center{:scope => "col", "data-dynatable-no-sort" => "true", :width => "15%" }
-              %span.sr-only Check/Uncheck
-              %button.button.select-all.tiny= "Check All"
-              %button.button.select-none.tiny= "Uncheck All"
-          %tbody
-            - grades.each do |g|
-              - student = g.student
-              - team = student.team_for_course(course)
-              %tr
-                - if assignment.is_individual?
-                  %td= link_to student.try(:first_name), student_path(student)
-                  %td= link_to student.try(:last_name), student_path(student)
-                  %td
-                    - if course.has_teams? && student.present? && team.present?
-                      = link_to team.try(:name), team
-                  %td= points g.score
-                  %td= raw g.feedback
-                %td
-                  .button-bar
-                    %ul.button-group.right.radius
-                      %li
-                        = link_to "See Grade", assignment_grade_path(g.assignment, :student_id => g.student_id), :class => "button"
-                      %li= link_to 'Edit', edit_assignment_grade_path(:assignment_id => assignment.id, :student_id => student.try(:id)), :class => "button"
-                %td
-                  .center= check_box_tag "grade_ids[]", g.id
-      .right.form_buttons
-        = submit_tag "Update Selected Grade Statuses", :class => "button radius"
+    = form_tag edit_status_grades_assignment_path assignment do
+      .columns
+        %table.responsive.no_radius.nofeatures_default_last_name_dynatable{"aria-describedby" => "inProgressTableCaption"}
+          %thead
+            %tr
+              - if assignment.is_individual?
+                %th{:scope => "col", :width => "8%"} First Name
+                %th{:scope => "col", :width => "8%"} Last Name
+                - if course.has_teams?
+                  %th{:scope => "col", :width => "15%"}= "#{term_for :team}"
+              - elsif assignment.has_groups?
+                %th{:scope => "col"} Group
+              %th{:scope => "col", :width => "8%"} Score
+              %th{:scope => "col"} Feedback
+              %th{:scope => "col", "data-dynatable-no-sort" => "true", :width => "20%" }
+                %span.sr-only Actions
+              %th.center{:scope => "col", "data-dynatable-no-sort" => "true", :width => "15%" }
+                %span.sr-only Check/Uncheck
+                %button.button.select-all.tiny= "Check All"
+                %button.button.select-none.tiny= "Uncheck All"
+            %tbody
+              - grades.each do |g|
+                - cache ["v1", g] do
+                  - student = g.student
+                  - team = student.team_for_course(course)
+                  %tr
+                    - if assignment.is_individual?
+                      %td= link_to student.try(:first_name), student_path(student)
+                      %td= link_to student.try(:last_name), student_path(student)
+                      %td
+                        - if course.has_teams? && student.present? && team.present?
+                          = link_to team.try(:name), team
+                      %td= points g.score
+                      %td= raw g.feedback
+                    %td
+                      .button-bar
+                        %ul.button-group.right.radius
+                          %li
+                            = link_to "See Grade", assignment_grade_path(g.assignment, :student_id => g.student_id), :class => "button"
+                          %li= link_to 'Edit', edit_assignment_grade_path(:assignment_id => assignment.id, :student_id => student.try(:id)), :class => "button"
+                    %td
+                      .center= check_box_tag "grade_ids[]", g.id
+        .right.form_buttons
+          = submit_tag "Update Selected Grade Statuses", :class => "button radius"
