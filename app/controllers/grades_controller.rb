@@ -50,9 +50,18 @@ class GradesController < ApplicationController
       @course_badges = serialized_course_badges
     end
     @assignment_score_levels = @assignment.assignment_score_levels.order_by_value
+    @serialized_score_levels = @assignment_score_levels.empty? ? empty_score_levels_hash : fetch_serialized_assignment_score_levels
   end
 
   private
+
+  def empty_score_levels_hash
+    {assignment_score_levels: []}.to_json
+  end
+
+  def fetch_serialized_assignment_score_levels
+    ActiveModel::ArraySerializer.new(@assignment_score_levels, each_serializer: AssignmentScoreLevelSerializer).to_json
+  end
 
   def create_student_assignment_grade
     @grade = Grade.create student_id: @student[:id], assignment_id: @assignment[:id], assignment_type_id: @assignment[:assignment_type_id]#, raw_score: 0

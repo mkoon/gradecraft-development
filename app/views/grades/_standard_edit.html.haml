@@ -10,7 +10,7 @@
   = simple_form_for @grade, url: assignment_grade_path(@assignment), method: :patch do |f|
     = hidden_field_tag :student_id, current_student.id
 
-    #grade(ng-controller="GradeCtrl" ng-init="init(#{@serialized_grade})")
+    #grade(ng-controller="GradeCtrl" ng-init="init(#{@serialized_grade}, #{@serialized_score_levels})")
 
       .panel.splash(ng-cloak) Loading grade for #{@student.name}...
 
@@ -18,9 +18,11 @@
       .panel(ng-cloak)
         .small-12.medium-4.columns
           = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
-          - if @assignment.has_levels?
-            -# TODO: still need to add support for levels
-            = f.select :raw_score, @assignment_score_levels.map { |l| [l.formatted_name,l.value] }, :include_blank => true
+          - if @assignment_score_levels.count > 0 # use this longhand method to save a request
+            {{ assignmentScoreLevels.length }}
+            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.rawScore" ng-change="grade.update()")
+              %option(value="{{score_level.value}}" ng-repeat="score_level.value as score_level.name for score_level in assignmentScoreLevels" ng-selected="grade.rawScore == score_level.value") {{score_level.name}}
+
           - else
             = f.text_field :raw_score,
               default: @assignment.point_total,
@@ -41,7 +43,7 @@
             .input.select.optional.grade_status
               %label.select.optional(for="grade_status") Status
               %select.select.optional(name="grade[status]" id="grade_status" ng-model="grade.status" ng-change="grade.update()")
-                <option value="{{grade_status}}" ng-repeat="grade_status in gradeStatuses" ng-selected="grade_status == grade.status">{{grade_status}}</option>
+                %option(value="{{grade_status}}" ng-repeat="grade_status in gradeStatuses" ng-selected="grade_status == grade.status") {{grade_status}}
 
             .form_label Can the student see this grade?
         - elsif @grade.status.blank?
