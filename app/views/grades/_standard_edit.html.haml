@@ -19,9 +19,8 @@
         .small-12.medium-4.columns
           = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
           - if @assignment_score_levels.count > 0 # use this longhand method to save a request
-            {{ assignmentScoreLevels.length }}
-            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.rawScore" ng-change="grade.update()")
-              %option(value="{{score_level.value}}" ng-repeat="score_level.value as score_level.name for score_level in assignmentScoreLevels" ng-selected="grade.rawScore == score_level.value") {{score_level.name}}
+            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.raw_score" ng-change="grade.update()")
+              %option(value="{{scoreLevel.value}}" ng-repeat="scoreLevel in assignmentScoreLevels" ng-selected="grade.rawScore == scoreLevel.value") {{scoreLevel.name}} ({{scoreLevel.formatted_value}} points)
 
           - else
             = f.text_field :raw_score,

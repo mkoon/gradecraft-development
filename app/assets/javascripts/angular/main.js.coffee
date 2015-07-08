@@ -1,7 +1,4 @@
-angular.module('lodash', []).constant('_', window._)
-
-@gradecraft = angular.module('gradecraft', ['restangular', 'ui.sortable', 'ng-rails-csrf', 'ngResource', 'ngAnimate', 'froala', 'smart-number', 'lodash'])
-
+@gradecraft = angular.module('gradecraft', ['restangular', 'ui.sortable', 'ng-rails-csrf', 'ngResource', 'ngAnimate', 'froala', 'smart-number', 'helpers'])
 
 @gradecraft.directive "modalDialog", ->
   restrict: "E"

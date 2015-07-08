@@ -1,8 +1,8 @@
-@gradecraft.controller 'GradeCtrl', ['$rootScope', '$scope', 'GradePrototype', 'AssignmentScoreLevelPrototype', '$window', '$http', '_', ($rootScope, $scope, GradePrototype, AssignmentScoreLevelPrototype, $window, $http, _) -> 
+@gradecraft.controller 'GradeCtrl', ['$rootScope', '$scope', 'GradePrototype', 'AssignmentScoreLevelPrototype', '$window', '$http', ($rootScope, $scope, GradePrototype, AssignmentScoreLevelPrototype, $window, $http) -> 
 
-  $scope.init = (params)->
+  $scope.init = (grade, assignmentScoreLevels)->
     $scope.header = "waffles" 
-    gradeParams = params["grade"]
+    gradeParams = grade["grade"]
     $scope.grade = new GradePrototype(gradeParams)
 
     gradeId = gradeParams.id
@@ -17,7 +17,7 @@
         $scope.assignmentScoreLevels.push scoreLevelPrototype
       )
 
-    $scope.addAssignmentScoreLevels(params["assignment_score_levels"])
+    $scope.addAssignmentScoreLevels(assignmentScoreLevels)
 
     $scope.froalaOptions = {
       inlineMode: false,
