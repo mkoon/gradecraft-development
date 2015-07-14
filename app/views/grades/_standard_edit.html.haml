@@ -16,13 +16,31 @@
 
 
       .panel(ng-cloak)
-        .small-12.medium-4.columns
-          = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
-          - if @assignment_score_levels.count > 0 # use this longhand method to save a request
-            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.raw_score" ng-change="grade.update()")
+        - if @assignment_score_levels.count > 0 # use this longhand method to save a request
+          .small-12.medium-4.columns
+            = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
+            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.raw_score" ng-change="grade.update()" ng-disabled="grade.is_custom_value")
               %option(value="{{scoreLevel.value}}" ng-repeat="scoreLevel in assignmentScoreLevels" ng-selected="grade.rawScore == scoreLevel.value") {{scoreLevel.name}} ({{scoreLevel.formatted_value}} points)
 
-          - else
+          .small-12.medium-2.columns
+            %label#custom-value-label(for="grade_raw_score" ng-click="grade.toggleCustomValue()")
+              Custom Value
+              = image_tag "/assets/lock-blue-locked-sm.png"
+            = f.text_field :raw_score,
+              default: @assignment.point_total,
+              label: "Score",
+              hint: "Total Assignment Points: #{ points @assignment.point_total }",
+              "ng-model" => "grade.raw_score",
+              "ng-change" => "grade.update()",
+              "ng-model-options" => "grade.modelOptions()",
+              "ng-disabled" => "! grade.is_custom_value",
+              "placeholder" => "Enter raw score for grade",
+              "smart-number" => "",
+              "smart-number-options" => "{ maxDigits: 9, preventInvalidInput: true }"
+
+        - else
+          .small-12.medium-4.columns
+            = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
             = f.text_field :raw_score,
               default: @assignment.point_total,
               label: "Score",
