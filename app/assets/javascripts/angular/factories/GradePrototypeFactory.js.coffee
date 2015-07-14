@@ -8,9 +8,15 @@
       @is_custom_value = attrs.is_custom_value
       @http = http
 
-    toggleCustomValue: ()->
-      this.is_custom_value = ! this.is_custom_value
-      this.update()
+    enableCustomValue: ()->
+      if this.is_custom_value == false
+        this.is_custom_value = true
+        this.update()
+
+    disableCustomValue: ()->
+      if this.is_custom_value == true
+        this.is_custom_value = false
+        this.update()
 
     modelOptions: ()->
       {

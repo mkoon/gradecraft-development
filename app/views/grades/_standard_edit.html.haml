@@ -20,7 +20,7 @@
           .small-12.medium-4.columns
 
             -# dynamic label for select box
-            %label(for="grade_raw_score" ng-click="grade.toggleCustomValue()" ng-class="{'disabled': grade.is_custom_value}")
+            %label(for="grade_raw_score" ng-click="grade.disableCustomValue()" ng-class="{'disabled': grade.is_custom_value}")
               "Raw Score (#{@assignment.point_total} points Possible)"
               %img(alt="locked" src="/assets/lock-blue-locked-sm.png" ng-show="grade.is_custom_value")
               %img(alt="unlocked" src="/assets/lock-green-unlocked-sm.png" ng-show="! grade.is_custom_value")
@@ -31,7 +31,7 @@
           .small-12.medium-2.columns
 
             -# dynamic label for custom value field
-            %label#custom-value-label(for="grade_raw_score" ng-click="grade.toggleCustomValue()" ng-class="{'disabled': ! grade.is_custom_value}")
+            %label#custom-value-label(for="grade_raw_score" ng-click="grade.enableCustomValue()" ng-class="{'disabled': ! grade.is_custom_value}")
               Custom Value
               %img(alt="locked" src="/assets/lock-blue-locked-sm.png" ng-show="! grade.is_custom_value")
               %img(alt="unlocked" src="/assets/lock-green-unlocked-sm.png" ng-show="grade.is_custom_value")
