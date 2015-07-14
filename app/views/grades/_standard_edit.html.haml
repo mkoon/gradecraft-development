@@ -18,14 +18,24 @@
       .panel(ng-cloak)
         - if @assignment_score_levels.count > 0 # use this longhand method to save a request
           .small-12.medium-4.columns
-            = f.label :raw_score, "Raw Score (#{@assignment.point_total} points Possible)"
-            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.raw_score" ng-change="grade.update()" ng-disabled="grade.is_custom_value")
+
+            -# dynamic label for select box
+            %label(for="grade_raw_score" ng-click="grade.toggleCustomValue()" ng-class="{'disabled': grade.is_custom_value}")
+              "Raw Score (#{@assignment.point_total} points Possible)"
+              %img(alt="locked" src="/assets/lock-blue-locked-sm.png" ng-show="grade.is_custom_value")
+              %img(alt="unlocked" src="/assets/lock-green-unlocked-sm.png" ng-show="! grade.is_custom_value")
+
+            %select#grade_raw_score(name="grade[raw_score]" ng-model="grade.raw_score" ng-change="grade.update()" ng-disabled="grade.is_custom_value" ng-class="{'disabled': grade.is_custom_value'}")
               %option(value="{{scoreLevel.value}}" ng-repeat="scoreLevel in assignmentScoreLevels" ng-selected="grade.rawScore == scoreLevel.value") {{scoreLevel.name}} ({{scoreLevel.formatted_value}} points)
 
           .small-12.medium-2.columns
-            %label#custom-value-label(for="grade_raw_score" ng-click="grade.toggleCustomValue()")
+
+            -# dynamic label for custom value field
+            %label#custom-value-label(for="grade_raw_score" ng-click="grade.toggleCustomValue()" ng-class="{'disabled': ! grade.is_custom_value}")
               Custom Value
-              = image_tag "/assets/lock-blue-locked-sm.png"
+              %img(alt="locked" src="/assets/lock-blue-locked-sm.png" ng-show="! grade.is_custom_value")
+              %img(alt="unlocked" src="/assets/lock-green-unlocked-sm.png" ng-show="grade.is_custom_value")
+
             = f.text_field :raw_score,
               default: @assignment.point_total,
               label: "Score",

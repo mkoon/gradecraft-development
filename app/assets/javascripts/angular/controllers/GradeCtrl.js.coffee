@@ -3,7 +3,7 @@
   $scope.init = (grade, assignmentScoreLevels)->
     $scope.header = "waffles" 
     gradeParams = grade["grade"]
-    $scope.grade = new GradePrototype(gradeParams)
+    $scope.grade = new GradePrototype(gradeParams, $http)
 
     gradeId = gradeParams.id
     $scope.rawScoreUpdating = false
@@ -33,40 +33,4 @@
       # Additional save params.
       saveParams: {"save_type": "feedback"}
     }
-
-  GradePrototype = (attrs={})->
-    grade = attrs
-    this.id = grade["id"]
-    this.status = grade["status"]
-    this.raw_score = grade["raw_score"]
-    this.feedback = grade["feedback"]
-
-  GradePrototype.prototype = {
-    modelOptions: ()->
-      {
-        updateOn: 'default blur',
-        debounce: {
-          default: 1800,
-          blur: 0
-        }
-      }
-
-    update: ()->
-      self = this
-      $http.put("/grades/#{self.id}/async_update", self).success(
-        (data,status)->
-      )
-      .error((err)->
-      )
-
-    params: ()->
-      {
-        id: self.id,
-        status: self.status,
-        raw_score: this.raw_score,
-        feedback: this.feedback
-      }
-
-  }
-
 ]
