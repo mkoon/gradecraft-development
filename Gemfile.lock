@@ -78,7 +78,7 @@ GEM
       railties (>= 3.1)
       sprockets (~> 2)
       tilt
-    angularjs-rails (1.2.26)
+    angularjs-rails (1.4.2)
     arel (6.0.0)
     autonumeric-rails (1.9.37)
       jquery-rails (>= 2.0.2)
@@ -549,7 +549,7 @@ DEPENDENCIES
   acts_as_list
   addressable
   angular-rails-templates (~> 0.2.0)
-  angularjs-rails (~> 1.2.14)
+  angularjs-rails (~> 1.4.2)
   autonumeric-rails
   aws-sdk (< 2.0)
   bootsy
