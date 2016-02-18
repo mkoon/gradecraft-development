@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>analytics - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script src="./js/jquery.js"></script>
+<script src="./js/darkfish.js"></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+  <ul class="link-list" role="directory">
+    <li><a href="#label-Analytics">Analytics</a>
+    <li><a href="#label-Processing+and+Storage">Processing and Storage</a>
+    <li><a href="#label-Granularity">Granularity</a>
+    <li><a href="#label-Creating+New+Analytics+Aggregate">Creating New Analytics Aggregate</a>
+    <li><a href="#label-scope_by"><code>scope_by</code></a>
+    <li><a href="#label-increment_keys"><code>increment_keys</code></a>
+    <li><a href="#label-Displaying+Aggregate+Data">Displaying Aggregate Data</a>
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    <div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./README_FOR_APP.html">README_FOR_APP</a>
+  
+    <li><a href="./analytics_md.html">analytics</a>
+  
+    <li><a href="./analytics_dashboard_md.html">analytics_dashboard</a>
+  
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page analytics.md">
+
+<h1 id="label-Analytics">Analytics<span><a href="#label-Analytics">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>GradeCraft includes analytics useful for staff to monitor and analyze app
+usage for their course. To view analytics, when logged in as a staff
+member, visit <code>/analytics</code> in the app.</p>
+
+<h2 id="label-Processing+and+Storage">Processing and Storage<span><a href="#label-Processing+and+Storage">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The analytics built into GradeCraft use MongoDB to store aggregate
+analytics data over time.</p>
+
+<p>Aggregate data is pre-processed from events sent by the app, to ensure
+quick interaction when viewing analytics data in the analytics dashboard
+and to maximize scalability.</p>
+
+<p>For more background, <a
+href="https://github.com/bellotastudios/gradecraft-development/issues/108">see
+discussion and links here</a>.</p>
+
+<p>MongoDB was chosen for its document-based storage structure and quick
+nested upsert functionality.</p>
+
+<p>Document-based storage allows for efficient writing and reading of nested
+data structures in a way that&#39;s easily readable and understood. It may
+be possible to replace MongoDB using Postgres&#39;s HStore in PostgreSQL
+9.2 or later, or its JSON store in PostgreSQL 9.3 or later, if desired.</p>
+
+<p>Nested upsert functionality makes it possible to construct a nested hash of
+values to be incremented (e.g. for several time-based buckets) in a single
+command without having to do separate queries to see if a given nested hash
+key already exists or to query the value in order to increment it. This
+makes writing value-increments from events very quick and efficient, even
+for multiple granularities at once.</p>
+
+<h2 id="label-Granularity">Granularity<span><a href="#label-Granularity">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>All aggregate data is stored in multiple granularities (yearly, monthly,
+weekly, daily, hourly, and minutely). For example, when a new event comes
+in, it increments tracked aggregate values for the current year, month,
+week, day, hour, and minute.</p>
+
+<p>This makes it trivial to quickly query e.g. all values aggregated by hour
+for some time range.</p>
+
+<h2 id="label-Creating+New+Analytics+Aggregate">Creating New Analytics Aggregate<span><a href="#label-Creating+New+Analytics+Aggregate">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>To create a new aggregate (i.e. something to be tracked and graphed),
+simply create a new class in <code>app/analytics_aggregates</code> with the
+following data:</p>
+
+<pre class="ruby"><span class="ruby-keyword">class</span> <span class="ruby-constant">MyNewAggregate</span>
+  <span class="ruby-identifier">include</span> <span class="ruby-constant">Analytics</span><span class="ruby-operator">::</span><span class="ruby-constant">Aggregate</span>
+ 
+  <span class="ruby-comment"># One or more fields specific to this aggregate,</span>
+  <span class="ruby-comment"># should at minimum include the field being scoped by.</span>
+  <span class="ruby-identifier">field</span> :<span class="ruby-identifier">course_id</span>, <span class="ruby-identifier">type</span><span class="ruby-operator">:</span> <span class="ruby-constant">Integer</span> 
+  <span class="ruby-identifier">field</span> :<span class="ruby-identifier">events</span>, <span class="ruby-identifier">type</span><span class="ruby-operator">:</span> <span class="ruby-constant">Hash</span>
+  
+  <span class="ruby-identifier">scope_by</span> :<span class="ruby-identifier">course_id</span>             
+
+  <span class="ruby-identifier">increment_keys</span> <span class="ruby-string">&quot;events.%{event_type}.%{granular_key}&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+                 <span class="ruby-string">&quot;events._all.%{granular_key}&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<h2 id="label-scope_by"><code>scope_by</code><span><a href="#label-scope_by">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>scope_by</code> is a comma-separated list of collection keys to
+scope aggregates by. This can be thought of as the overall scope to filter
+results when viewing the graphed data as a user. At the very least, any
+data viewed by staff in GradeCraft should be scoped by course or something
+that belongs to course (e.g. assignment).</p>
+
+<p>The scope must be included as a field in the class, though other data keys
+(e.g. <code>events</code> in the example above) may but don&#39;t need to
+be.</p>
+
+<h2 id="label-increment_keys"><code>increment_keys</code><span><a href="#label-increment_keys">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This is a hash of values to increment, where the key is the key name of the
+value to be incremented in the Mongo collection (and may be nested).</p>
+
+<p>The key string may contain variables using <code>%{}</code> notation. The
+variables will be replaced at the time the upsert happens. The available
+variables are any of the attributes on the triggered event. In the example
+above, <code>event_type</code> will call <code>event.event_type</code> when
+the aggregate is triggered by the event.</p>
+
+<p>In addition to the attributes of the event, the variable
+<code>granular_key</code> is also provided. When used, it will actually
+loop through all granularities and replace them with the appropriate
+time-keys. I.e. <code>&quot;events._all.%{granular_key}&quot;</code> above
+will actually upsert the following:</p>
+
+<pre class="ruby">{
+  <span class="ruby-string">&quot;events._all.all_time&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+  <span class="ruby-string">&quot;events._all.yearly.1356976800&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+  <span class="ruby-string">&quot;events._all.monthly.1376352000&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+  <span class="ruby-string">&quot;events._all.weekly.1377129600&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+  <span class="ruby-string">&quot;events._all.daily.1377648000&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+  <span class="ruby-string">&quot;events._all.hourly.1377702000&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>,
+  <span class="ruby-string">&quot;events._all.minutely.1377704400&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+}
+</pre>
+
+<p>The value for each key in the <code>increment_keys</code> hash is the value
+by which to increment each time an event is sent. For simple count
+aggregates (e.g. logging the number of that event type to occur in each
+granularity), it may be a simple number (the example above increments the
+count by 1 each time an event happens).</p>
+
+<p>The value may also be something more complex (e.g. an average or other
+calculation) using a lambda:</p>
+
+<pre class="ruby"><span class="ruby-identifier">increment_keys</span> <span class="ruby-string">&quot;%{granular_key}.average&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">lambda</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">event</span><span class="ruby-operator">|</span> <span class="ruby-identifier">event</span>.<span class="ruby-identifier">actual</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">/</span> <span class="ruby-identifier">event</span>.<span class="ruby-identifier">some_possible</span> }
+</pre>
+
+<p>In addition to the event triggering the aggregate increment, the lambda may
+also be called with the granularity and interval passed to the lambda
+context (useful for e.g. frequency or rate calculations):</p>
+
+<pre class="ruby"><span class="ruby-identifier">increment_keys</span> <span class="ruby-string">&quot;%{granular_key}.rate&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">lambda</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">event</span>, <span class="ruby-identifier">granularity</span>, <span class="ruby-identifier">interval</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">interval</span> <span class="ruby-operator">/</span> (<span class="ruby-identifier">event</span>.<span class="ruby-identifier">this_time</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">event</span>.<span class="ruby-identifier">last_time</span>)
+}
+</pre>
+
+<p><em>Don&#39;t pass the granularity and interval to the lambda unless
+needed, as  it&#39;s less efficient, since it must be calculated in each
+time the  increment method loops through the granularities, whereas a
+lambda that  only needs the event is calculated and cached once for all 
+granularities.</em></p>
+
+<h2 id="label-Displaying+Aggregate+Data">Displaying Aggregate Data<span><a href="#label-Displaying+Aggregate+Data">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>To display an aggregate&#39;s data, call its <code>data</code> method, e.g.
+<code>MyNewAggregate.data</code>.</p>
+
+<p>The <code>data</code> method takes 4 arguments: <code>(granularity, range,
+scope, and select_keys)</code></p>
+
+<p>More documentation to come. See
+<code>/app/controllers/analytics_controller.rb</code> for examples.</p>
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="http://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="http://docs.seattlerb.org/rdoc/">RDoc</a> 4.2.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
